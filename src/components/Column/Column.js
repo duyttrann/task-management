@@ -1,20 +1,68 @@
 import React from 'react'
+import { Container, Draggable } from 'react-smooth-dnd'
 import './Column.scss'
 
-function Column(){
+import Card from 'components/Card/Card';
+import { mapOrder} from 'utilities/sorts'
+
+
+function Column(props) {
+    const { column, onCardDrop } = props
+
+//    const cards =  column.cards
+    const cards = mapOrder(column.cards, column.cardOrder,'id')  
+
+    // const onCardDrop =(columnId, dropResult)=> {
+    //   if(dropResult.removedIndex !==null || dropResult.addedIndex !==null) {
+        
+    //   }
+        
+    //   }  
     return (
         <div className='column'>
-        <header>Brainstorm</header>
-       <ul>
-         <li>
-           <img src='https://scontent-lga3-2.xx.fbcdn.net/v/t39.30808-1/271180999_6715074841898050_3119676219567720605_n.jpg?stp=dst-jpg_p320x320&_nc_cat=102&ccb=1-7&_nc_sid=7206a8&_nc_ohc=P3PCTsYPY3gAX-BEnAT&_nc_ht=scontent-lga3-2.xx&oh=00_AT_ErSWuf9qUEUicjHgo2rVGTI-2bxdMSaQTeCFKHBDxOA&oe=63407127' alt='duy-img'></img>
-           Title: Duy Tran</li>
-         <li>Testing ksacmsakadcascascascascascascm</li>
-         <li>Testing ksacmsakm</li>
-         <li>Testing ksacmsakm</li>
-         <li>Testing ksacmsakm</li>
-       </ul>
-       <footer>Add another cards</footer>
+        <header className='column-drag-handle'>{column.title}</header>
+       <div className='card-list'>
+       <Container
+                    {...column.props}
+                   
+                    // onDragStart={e => console.log('drag started', e)}
+                    // onDragEnd={e => console.log('drag end', e)}
+                    // onDragEnter={() => {
+                    //     console.log('drag enter:', column.id);
+                    //   }}
+                    //   onDragLeave={() => {
+                    //     console.log('drag leave:', column.id);
+                    //   }}
+                     groupName="col"
+                    onDrop={dropResult =>onCardDrop(column.id,dropResult)}
+                    getChildPayload={index =>
+                      cards[index]
+                    }
+                    dragClass="card-ghost"
+                    dropClass="card-ghost-drop"
+                 
+                    onDropReady={p => console.log('Drop ready: ', p)}
+                    dropPlaceholder={{                      
+                      animationDuration: 150,
+                      showOnTop: true,
+                      className: 'card-drop-preview' 
+                    }}
+                    dropPlaceholderAnimationDuration={200}
+                  >
+                 {cards.map((card,index)=>(
+                 <Draggable key={index}>
+                    <Card  card={card} />
+                 </Draggable>
+                 ) )}
+       
+         </Container>
+         
+       </div>
+       <footer>
+        <div className='footer-actions'>
+          <i className='fa fa-plus icon'/> Add another cards
+        </div>
+        </footer>
      </div>
     
     )
