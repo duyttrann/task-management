@@ -5,7 +5,7 @@ $column-border-radius:5px;
 
 
 
-$list-bg-color:#ebecf0;
+
 $column-height: calc(#{$board-content-height}-#{$gap *2});
 
 .column{
@@ -17,7 +17,7 @@ $column-height: calc(#{$board-content-height}-#{$gap *2});
     // }
     margin-left: $gap;
     >*{
-      background-color: $list-bg-color;
+      background-color: $column-bg-color;
       color: #333;
       padding: 0 8px;
     }
@@ -57,8 +57,8 @@ $column-height: calc(#{$board-content-height}-#{$gap *2});
         width: 11px;
       }
       &::-webkit-thumb{
-        background-color: darken($list-bg-color, 15);
-        border-right: 5px $list-bg-color solid;
+        background-color: darken($column-bg-color, 15);
+        border-right: 5px $column-bg-color solid;
       }
 
       .card-ghost {
