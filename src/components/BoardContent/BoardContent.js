@@ -23,6 +23,35 @@ function BoardContent() {
     //get value of the input and put to addNewColumn function
     const onNewColumnTitleChange = useCallback((e) =>setNewColumnTitle(e.target.value), [])
 
+
+    //edit the text in Column title when onclick
+   const onUpdateColumn = (newColumnToUpdate) =>{
+        const columnIdToUpdate = newColumnToUpdate.id
+        console.log(newColumnToUpdate)
+        console.log(columnIdToUpdate)
+        let newColumns= [...columns]
+          
+
+        //find the index of the id of the onlcik Column title
+        const index = newColumns.findIndex(i => i.id === columnIdToUpdate)
+        
+        if (newColumnToUpdate._destroy) {
+            //remove column
+            newColumns.splice(index, 1)
+          } else { 
+          //update column
+           newColumns.splice(index, 1, newColumnToUpdate)
+        }
+        
+     
+        //update back column to board
+        let newBoard = {...board}
+        newBoard.columnOrder = newColumns.map(c=>c.id)
+        newBoard.columns = newColumns
+        setBoard(newBoard)
+        setColumns(newColumns)
+      }
+
     const addNewColumn = () => {
         console.log(newColumnTitle)
         if(!newColumnTitle) {
@@ -144,7 +173,7 @@ function BoardContent() {
         >
            {columns.map((column, index) => (
             <Draggable key={index}>
-              <Column column={column} onCardDrop={onCardDrop} />
+              <Column column={column} onCardDrop={onCardDrop}  onUpdateColumn={onUpdateColumn} />
             </Draggable>
             
            ) )}
