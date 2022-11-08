@@ -12,7 +12,9 @@ $card-border-radis:4px;
     }
     img.card-cover{
         display: block;
-        width: calc(100%+2*#{$gap});
+        // width: calc(100%+2*#{$gap});
+        width: 300px;
+
         margin: -$gap 0 $gap (-$gap);
         border-top-left-radius: $card-border-radis;
          border-bottom-right-radius:$card-border-radis;

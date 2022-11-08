@@ -6,7 +6,7 @@ function Card(props) {
 
     return(
     <div className='card-item'>
-        {card.cover &&  <img src={card.cover} className='card-cover' alt='duy-img' onMouseDown={e=>e.preventDefault()}></img>}
+        {card.cover &&  <img src={card.cover} className='card-cover'  alt='duy-img' onMouseDown={e=>e.preventDefault()}></img>}
         {card.title}
     
     </div>

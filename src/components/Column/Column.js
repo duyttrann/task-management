@@ -1,19 +1,20 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { Container, Draggable } from 'react-smooth-dnd'
 import './Column.scss'
 import {MODAL_ACTION_CLOSE, MODAL_ACTION_CONFIRM} from 'utilities/constants'
 import { saveContentAfterPressEnter, selectAllInlineText } from 'utilities/contentEditable'
+import {cloneDeep} from 'lodash'
 
 import Card from 'components/Card/Card';
 import ConfirmModal from 'components/Common/ConfirmModal';
 import { mapOrder} from 'utilities/sorts'
-import {Form ,Dropdown} from 'react-bootstrap'
+import {Form ,Dropdown, Button} from 'react-bootstrap'
 
 function Column(props) {
     const { column, onCardDrop, onUpdateColumn } = props
 
 //    const cards =  column.cards
-    const cards = mapOrder(column.cards, column.cardOrder,'id')  
+    const cards = mapOrder(column.cards, column.cardOrder,'_id')  
 
     // const onCardDrop =(columnId, dropResult)=> {
     //   if(dropResult.removedIndex !==null || dropResult.addedIndex !==null) {
@@ -28,6 +29,10 @@ function Column(props) {
     const toggleShowConfirm = () => setShowConfirmModal(!showConfirmModal)
 
 
+    const [openNewCardForm , setOpenNewCardForm] = useState(false)
+    const toggleOpenNewCardForm = () =>{  setOpenNewCardForm(!openNewCardForm)}
+
+
     const [columnTitle, setColumnTitle] = useState('')
     useEffect(() => {
       setColumnTitle(column.title)
@@ -37,6 +42,20 @@ function Column(props) {
       setColumnTitle(e.target.value)
     })
 
+
+    const newCardTextareaRef = useRef(null)
+    useEffect(()=> {
+      if(newCardTextareaRef && newCardTextareaRef.current) {
+        newCardTextareaRef.current.focus()
+      }
+    }, [openNewCardForm])
+
+
+    const [newCardTitle, setNewCardTitle] =useState('')
+
+    //get value of the input and put to addNewCard function
+    const onNewCardTitleChange = useCallback((e) =>setNewCardTitle(e.target.value), [])
+
     const handleColumnTitleBlur = (e) => {
         //update text in Column input onclick
         const newColumn = {
@@ -44,6 +63,8 @@ function Column(props) {
           title: columnTitle
         }
         onUpdateColumn(newColumn)
+        setNewCardTitle('')
+        toggleOpenNewCardForm()
     }
 
 
@@ -63,7 +84,31 @@ function Column(props) {
     }
 
    
+    const addNewCard = () => {
+      if (!newCardTitle) {
+        newCardTextareaRef.current.focus()
+        return
+      }
 
+
+      
+      const newCardToAdd = {
+        id: Math.random().toString(36).substr(2,5),
+        boardId: column.boardId,
+        columnId: column._id,
+        title: newCardTitle.trim(),
+        cover:null
+      }
+     
+
+      //reupdate back to column, use lodash to create a new clone of Column, dont change the raw data
+      let newColumn = cloneDeep(column)
+      newColumn.cards.push(newCardToAdd)
+      newColumn.cardOrder.push(newCardToAdd._id)
+
+      onUpdateColumn(newColumn)
+
+    }
     return (
         <div className='column'>
         <header className='column-drag-handle'>
@@ -112,7 +157,7 @@ function Column(props) {
                     //     console.log('drag leave:', column.id);
                     //   }}
                      groupName="col"
-                    onDrop={dropResult =>onCardDrop(column.id,dropResult)}
+                    onDrop={dropResult =>onCardDrop(column._id,dropResult)}
                     getChildPayload={index =>
                       cards[index]
                     }
@@ -134,12 +179,43 @@ function Column(props) {
                  ) )}
        
          </Container>
-         
+                
+         {openNewCardForm && 
+          <div className='add-new-card-area'>
+          <Form.Control size='sm' as='textarea'
+           placeholder ='Enter title for this card..' 
+           rows="3"
+           className='texarea-enter-new-card'
+           ref={newCardTextareaRef}
+           value ={newCardTitle}
+           onChange={onNewCardTitleChange}
+           onKeyDown ={event => (event.key == 'Enter') && addNewCard() }
+           // ref={newColumnInputRef}
+           // value={newColumnTitle}
+           // onChange={onNewColumnTitleChange}
+           // onKeyDown={event => (event.key === 'Enter') && addNewColumn()}
+          />
+           </div>
+         }       
+        
        </div>
        <footer>
-        <div className='footer-actions'>
-          <i className='fa fa-plus icon'/> Add another cards
+
+       {openNewCardForm && 
+          <div className='add-new-card-actions'>
+          <Button variant="success" size='sm' onClick={addNewCard} >Add Card</Button>
+          <span className='cancel-icon' onClick={toggleOpenNewCardForm} >
+            <i className='fa fa-trash icon'></i>
+          </span>
+           </div>
+         }      
+
+        {!openNewCardForm && 
+        <div className='footer-actions' onClick={toggleOpenNewCardForm}>
+        <i className='fa fa-plus icon'/> Add another cards
         </div>
+        }
+        
         </footer>
 
 

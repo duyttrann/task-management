@@ -55,4 +55,16 @@ body{
       border: 1px solid $input-bg-color;
     }
   }
+
+  span.cancel-icon {
+    margin-left: $gap;
+    cursor: pointer;
+    i {
+      font-size: 18px;
+      color:  $alert-danger;
+      &:hover {
+        color: darken($alert-danger, 10);
+      }
+    }
+  }
 }
