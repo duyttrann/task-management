@@ -57,17 +57,7 @@
       input.input-enter-new-column {
         margin: 5px 0;
       }
-      .span.cancel-new-column {
-        margin: $gap;
-        cursor: pointer;
-        i {
-          font-size: 18px;
-          color:  $alert-danger;
-          &:hover {
-            color: darken($alert-danger, 10);
-          }
-        }
-      }
+  
     }
     
   }

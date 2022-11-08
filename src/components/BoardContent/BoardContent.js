@@ -8,6 +8,7 @@ import { mapOrder} from 'utilities/sorts'
 import { applyDrag } from 'utilities/dragDrop'
 
 import { initialData } from 'actions/initialData'
+import { fetchBoardDetails } from 'actions/ApiCall'
 import { isEmpty} from 'lodash'
 
 function BoardContent() {
@@ -15,9 +16,11 @@ function BoardContent() {
     const [board,setBoard] = useState({}) //object
     const [columns,setColumns] = useState([]) //array
     const [openNewColumnForm , setOpenNewColumnForm] = useState(false)
+    const toggleOpenNewColumnForm = () =>{  setOpenNewColumnForm(!openNewColumnForm)}
+
 
     const newColumnInputRef = useRef(null)
-
+ 
     const [newColumnTitle, setNewColumnTitle] =useState('')
 
     //get value of the input and put to addNewColumn function
@@ -26,14 +29,14 @@ function BoardContent() {
 
     //edit the text in Column title when onclick
    const onUpdateColumn = (newColumnToUpdate) =>{
-        const columnIdToUpdate = newColumnToUpdate.id
+        const columnIdToUpdate = newColumnToUpdate._id
         console.log(newColumnToUpdate)
         console.log(columnIdToUpdate)
         let newColumns= [...columns]
           
 
         //find the index of the id of the onlcik Column title
-        const index = newColumns.findIndex(i => i.id === columnIdToUpdate)
+        const index = newColumns.findIndex(i => i._id === columnIdToUpdate)
         
         if (newColumnToUpdate._destroy) {
             //remove column
@@ -41,12 +44,16 @@ function BoardContent() {
           } else { 
           //update column
            newColumns.splice(index, 1, newColumnToUpdate)
+        
+
+    
+        
         }
         
      
         //update back column to board
         let newBoard = {...board}
-        newBoard.columnOrder = newColumns.map(c=>c.id)
+        newBoard.columnOrder = newColumns.map(c=>c._id)
         newBoard.columns = newColumns
         setBoard(newBoard)
         setColumns(newColumns)
@@ -62,7 +69,7 @@ function BoardContent() {
 
         const newColumnToAdd = {
           id: Math.random().toString(36).substr(2,5),
-          boardId: board.id,
+          boardId: board._id,
           title: newColumnTitle.trim(),
           cardOrder: [],
           cards: []
@@ -72,7 +79,7 @@ function BoardContent() {
         newColumns.push(newColumnToAdd)
 
         let newBoard = {...board}
-        newBoard.columnOrder = newColumns.map(c=>c.id)
+        newBoard.columnOrder = newColumns.map(c=>c._id)
         newBoard.columns = newColumns
         setBoard(newBoard)
         setColumns(newColumns)
@@ -83,24 +90,29 @@ function BoardContent() {
       }
 
     useEffect(()=> {
-        const boardFromDB = initialData.boards.find(board => board.id === 'board-1')
-       
-        if(boardFromDB) {
-          setBoard(boardFromDB)
+        // const boardFromDB = initialData.boards.find(board => board.id === 'board-1')
+        fetchBoardDetails('636860caf52276bd8952838c').then(board => {
+          // setBoard(boardFromDB)
+          // setColumns(mapOrder(boardFromDB.columns, boardFromDB.columnOrder, 'title') )
+          setBoard(board)
+          setColumns(mapOrder(board.columns, board.columnOrder, '_id') )
+        })
+//         if(boardFromDB) {
+//           setBoard(boardFromDB)
           
-/**
-          //sort columnOrders
-          boardFromDB.columns.sort(function(a,b) {
-              return boardFromDB.columnOrder.indexOf(a.id) - boardFromDB.columnOrder.indexOf(b.id)
-          })
+// /**
+//           //sort columnOrders
+//           boardFromDB.columns.sort(function(a,b) {
+//               return boardFromDB.columnOrder.indexOf(a.id) - boardFromDB.columnOrder.indexOf(b.id)
+//           })
 
-           setColumns(boardFromDB.columns)
-**/
-          //do it other way
-          // console.log(mapOrder(boardFromDB.columns, boardFromDB.columnOrder, 'id'));
-          setColumns(mapOrder(boardFromDB.columns, boardFromDB.columnOrder, 'title') )
+//            setColumns(boardFromDB.columns)
+// **/
+//           //do it other way
+//           // console.log(mapOrder(boardFromDB.columns, boardFromDB.columnOrder, 'id'));
+//           setColumns(mapOrder(boardFromDB.columns, boardFromDB.columnOrder, 'title') )
    
-        }
+//         }
       }, [])
 
 
@@ -130,7 +142,7 @@ function BoardContent() {
 
       //do the same with board
       let newBoard = {...board}
-      newBoard.columnOrder = newColumns.map(c=>c.id)
+      newBoard.columnOrder = newColumns.map(c=>c._id)
       newBoard.columns = newColumns
       console.log(newBoard)
       setBoard(newBoard)
@@ -140,18 +152,17 @@ function BoardContent() {
       if(dropResult.removedIndex !==null || dropResult.addedIndex !==null) {
         let newColumns = [...columns]
         
-        let currentColumn = newColumns.find(c=>c.id === columnId)
+        let currentColumn = newColumns.find(c=>c._id === columnId)
         currentColumn.cards = applyDrag(currentColumn.cards, dropResult)
-        currentColumn.cardOrder = currentColumn.cards.map(i => i.id)
+        currentColumn.cardOrder = currentColumn.cards.map(i => i._id)
         console.log(currentColumn)
         setColumns(newColumns)
         
       }
         
     }  
-    const toggleOpenNewColumnForm = () =>{
-        setOpenNewColumnForm(!openNewColumnForm)
-    }
+    
+
 
     return   (
 
@@ -173,7 +184,10 @@ function BoardContent() {
         >
            {columns.map((column, index) => (
             <Draggable key={index}>
-              <Column column={column} onCardDrop={onCardDrop}  onUpdateColumn={onUpdateColumn} />
+              <Column column={column} 
+              onCardDrop={onCardDrop}
+              onUpdateColumn={onUpdateColumn}
+               />
             </Draggable>
             
            ) )}
