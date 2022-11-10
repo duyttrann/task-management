@@ -8,7 +8,7 @@ import { mapOrder} from 'utilities/sorts'
 import { applyDrag } from 'utilities/dragDrop'
 
 import { initialData } from 'actions/initialData'
-import { fetchBoardDetails, createNewColumn } from 'actions/ApiCall'
+import { fetchBoardDetails } from 'actions/ApiCall'
 import { isEmpty} from 'lodash'
 
 function BoardContent() {
@@ -28,7 +28,7 @@ function BoardContent() {
 
 
     //edit the text in Column title when onclick
-   const onUpdateColumnState = (newColumnToUpdate) =>{
+   const onUpdateColumn = (newColumnToUpdate) =>{
         const columnIdToUpdate = newColumnToUpdate._id
         console.log(newColumnToUpdate)
         console.log(columnIdToUpdate)
@@ -60,6 +60,7 @@ function BoardContent() {
       }
 
     const addNewColumn = () => {
+        console.log(newColumnTitle)
         if(!newColumnTitle) {
           //if the input is empty, focus back to the input
           newColumnInputRef.current.focus()
@@ -67,25 +68,24 @@ function BoardContent() {
         }
 
         const newColumnToAdd = {
+          id: Math.random().toString(36).substr(2,5),
           boardId: board._id,
           title: newColumnTitle.trim(),
+          CardOrder: [],
+          cards: []
         }
 
-        createNewColumn(newColumnToAdd).then(column => {
-          let newColumns = [...columns]
-          newColumns.push(column)
-  
-          let newBoard = {...board}
-          newBoard.columnOrder = newColumns.map(c=>c._id)
-          newBoard.columns = newColumns
-          setBoard(newBoard)
-          setColumns(newColumns)
-  
-          setNewColumnTitle('')
-          toggleOpenNewColumnForm() 
-        })
+        let newColumns = [...columns]
+        newColumns.push(newColumnToAdd)
 
-     
+        let newBoard = {...board}
+        newBoard.columnOrder = newColumns.map(c=>c._id)
+        newBoard.columns = newColumns
+        setBoard(newBoard)
+        setColumns(newColumns)
+
+        setNewColumnTitle('')
+        toggleOpenNewColumnForm() 
 
       }
 
@@ -186,7 +186,7 @@ function BoardContent() {
             <Draggable key={index}>
               <Column column={column} 
               onCardDrop={onCardDrop}
-              onUpdateColumnState={onUpdateColumnState}
+              onUpdateColumn={onUpdateColumn}
                />
             </Draggable>
             
