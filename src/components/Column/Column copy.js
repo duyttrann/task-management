@@ -3,7 +3,7 @@ import { Container, Draggable } from 'react-smooth-dnd'
 import './Column.scss'
 import {MODAL_ACTION_CLOSE, MODAL_ACTION_CONFIRM} from 'utilities/constants'
 import { saveContentAfterPressEnter, selectAllInlineText } from 'utilities/contentEditable'
-import { createNewCard, updateColumn } from 'actions/ApiCall'
+import { createNewCard } from 'actions/ApiCall'
 import {cloneDeep} from 'lodash'
 
 import Card from 'components/Card/Card';
@@ -12,7 +12,7 @@ import { mapOrder} from 'utilities/sorts'
 import {Form ,Dropdown, Button} from 'react-bootstrap'
 
 function Column(props) {
-    const { column, onCardDrop, onUpdateColumnState } = props
+    const { column, onCardDrop, onUpdateColumn } = props
 
 //    const cards =  column.cards
     const cards = mapOrder(column.cards, column.CardOrder,'_id')  
@@ -57,34 +57,18 @@ function Column(props) {
     //get value of the input and put to addNewCard function
     const onNewCardTitleChange = useCallback((e) =>setNewCardTitle(e.target.value), [])
 
-
-
-    //update column title
     const handleColumnTitleBlur = (e) => {
-      
-          //only call api when user actually change
-        if (columnTitle !==  column.title) {
-              //update text in Column input onclick
-            const newColumn = {
-              ...column,
-              title: columnTitle
-            }
-          
-          
-          //call api updateColumn
-            updateColumn(newColumn._id, newColumn).then(updatedColumn => {
-            updatedColumn.cards = newColumn.cards
-            onUpdateColumnState(updatedColumn)
-             })
+        //update text in Column input onclick
+        const newColumn = {
+          ...column,
+          title: columnTitle
         }
-      
-
-      
+        onUpdateColumn(newColumn)
+        setNewCardTitle('')
+        toggleOpenNewCardForm()
     }
 
 
-
-    //remove column
     const onConfirmModalAction = (type) => {
       console.log(type)
         if(type === MODAL_ACTION_CONFIRM) {
@@ -93,12 +77,8 @@ function Column(props) {
             ...column,
             _destroy: true
           }
-          
-
-          //call api updateColumn
-          updateColumn(newColumn._id, newColumn).then(updatedColumn => {
-            onUpdateColumnState(updatedColumn)
-          })
+          console.log(newColumn)
+          onUpdateColumn(newColumn)
         }
       toggleShowConfirm()
 
@@ -126,7 +106,7 @@ function Column(props) {
           newColumn.cards.push(card)
           newColumn.CardOrder.push(card._id)
 
-          onUpdateColumnState(newColumn)
+          onUpdateColumn(newColumn)
       })
 
     
