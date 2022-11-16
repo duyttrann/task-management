@@ -86,7 +86,6 @@ function Column(props) {
 
     //remove column
     const onConfirmModalAction = (type) => {
-      console.log(type)
         if(type === MODAL_ACTION_CONFIRM) {
           //remove column
           const newColumn = {
