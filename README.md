@@ -7,7 +7,7 @@ It was deployed in this link for the whole website: https://task-management-9a4f
 I will try to update its feature little by little (hopefully) ...
 ## Tech stack
 ReactJs + NodeJs + Mongodb
-deployment environment: Firebase + Heroku
+Deployment environment: Firebase + Heroku
 
 ## Available Scripts
 
