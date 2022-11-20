@@ -1,6 +1,13 @@
-# Getting Started with Create React App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Description
+Hey, I have never had a chance to work on React tech stack ( reactjs + nodejs), that is the reason why I wanted to make something easy to learn + easy to use. So why not a project management tool that can help me to not using Excel to checklist? 
+With the uncountably great help from Mr Google, stackoverflow and together with all online docs, eventually the product is workable (somehow) with basic CRUD and some cool UI features (You can drag or drop stuff, it will be updated the order respectively) that I have learnt on the way. 
+It was deployed in this link for the whole website: https://task-management-9a4f8.web.app/
+
+I will try to update its feature little by little (hopefully) ...
+## Tech stack
+ReactJs + NodeJs + Mongodb
+deployment environment: Firebase + Heroku
 
 ## Available Scripts
 
